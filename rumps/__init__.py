@@ -17,7 +17,7 @@ statusbar application.
 """
 
 __title__ = 'rumps'
-__version__ = '0.4.0'
+__version__ = '0.4.7'
 __author__ = 'Jared Suttles'
 __license__ = 'Modified BSD'
 __copyright__ = 'Copyright 2020 Jared Suttles'
