@@ -266,6 +266,7 @@ class Menu(ListDict):
             key, value = self._process_new_menuitem(key, value)
             self._menu.addItem_(value._menuitem)
             super(Menu, self).__setitem__(key, value)
+            return key
 
     def __delitem__(self, key):
         value = self[key]
@@ -276,7 +277,7 @@ class Menu(ListDict):
         """Adds the object to the menu as a :class:`rumps.MenuItem` using the :attr:`rumps.MenuItem.title` as the
         key. `menuitem` will be converted to a `MenuItem` object if not one already.
         """
-        self.__setitem__(self._choose_key, menuitem)
+        return self.__setitem__(self._choose_key, menuitem)
 
     def clear(self):
         """Remove all `MenuItem` objects from within the menu of this `MenuItem`."""
@@ -350,6 +351,7 @@ class Menu(ListDict):
         key, menuitem = self._process_new_menuitem(self._choose_key, menuitem)
         self._insert_helper(existing_key, key, menuitem, 1)
         super(Menu, self).insert_after(existing_key, (key, menuitem))
+        return key
 
     def insert_before(self, existing_key, menuitem):
         """Insert a :class:`rumps.MenuItem` in the menu before the `existing_key`.
@@ -360,6 +362,7 @@ class Menu(ListDict):
         key, menuitem = self._process_new_menuitem(self._choose_key, menuitem)
         self._insert_helper(existing_key, key, menuitem, 0)
         super(Menu, self).insert_before(existing_key, (key, menuitem))
+        return key
 
     def _insert_helper(self, existing_key, key, menuitem, pos):
         if existing_key == key:  # this would mess stuff up...
