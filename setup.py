@@ -51,7 +51,7 @@ setup(
     long_description=readme + '\n\n' + changes,
     license='BSD License',
     install_requires=[
-        'pyobjc-framework-Cocoa'
+        'pyobjc'
     ],
     extras_require={
         'dev': [
