@@ -2,6 +2,7 @@
 
 _ENABLED = True
 try:
+    from UserNotifications import UNUserNotificationCenter,UNTimeIntervalNotificationTrigger,UNMutableNotificationContent,UNNotificationActionIcon,UNNotificationRequest
     from Foundation import NSUserNotification, NSUserNotificationCenter
 except ImportError:
     _ENABLED = False
@@ -74,7 +75,7 @@ def _gather_info_issue_9():  # pragma: no cover
 
 
 def _default_user_notification_center():
-    notification_center = NSUserNotificationCenter.defaultUserNotificationCenter()
+    notification_center = UNUserNotificationCenter.current()
     if notification_center is None:  # pragma: no cover
         info = (
             'Failed to setup the notification center. This issue occurs when the "Info.plist" file '
@@ -161,11 +162,14 @@ def notify(title, subtitle, message, data=None, sound=True,
 
     _internal.require_string_or_none(title, subtitle, message)
 
-    notification = NSUserNotification.alloc().init()
 
-    notification.setTitle_(title)
-    notification.setSubtitle_(subtitle)
-    notification.setInformativeText_(message)
+    content = UNMutableNotificationContent()
+
+    # notification = NSUserNotification.alloc().init()
+
+    content.setTitle_(title)
+    content.setSubtitle_(subtitle)
+    content.setInformativeText_(message)
 
     if data is not None:
         app = getattr(rumps.App, '*app_instance', rumps.App)
@@ -173,26 +177,34 @@ def notify(title, subtitle, message, data=None, sound=True,
         objc_string = _internal.string_to_objc(dumped)
         ns_dict = Foundation.NSMutableDictionary.alloc().init()
         ns_dict.setDictionary_({'value': objc_string})
-        notification.setUserInfo_(ns_dict)
+        content.setUserInfo_(ns_dict)
 
-    if icon is not None:
-        notification.set_identityImage_(rumps._nsimage_from_file(icon))
-    if sound:
-        notification.setSoundName_("NSUserNotificationDefaultSoundName")
-    if action_button:
-        notification.setActionButtonTitle_(action_button)
-        notification.set_showsButtons_(True)
-    if other_button:
-        notification.setOtherButtonTitle_(other_button)
-        notification.set_showsButtons_(True)
-    if has_reply_button:
-        notification.setHasReplyButton_(True)
-    if ignoreDnD:
-        notification.set_ignoresDoNotDisturb_(True)
+    # if icon is not None:
+    #     content.set_identityImage_(rumps._nsimage_from_file(icon))
+    # if sound:
+    #     notification.setSoundName_("NSUserNotificationDefaultSoundName")
+    # if action_button:
+    #     notification.setActionButtonTitle_(action_button)
+    #     notification.set_showsButtons_(True)
+    # if other_button:
+    #     notification.setOtherButtonTitle_(other_button)
+    #     notification.set_showsButtons_(True)
+    # if has_reply_button:
+    #     notification.setHasReplyButton_(True)
+    # if ignoreDnD:
+    #     notification.set_ignoresDoNotDisturb_(True)
 
-    notification.setDeliveryDate_(Foundation.NSDate.dateWithTimeInterval_sinceDate_(0, Foundation.NSDate.date()))
+    request = UNNotificationRequest(
+        identifier="LocalNotification",
+        content=content, 
+        trigger=timeTrigger
+    )
+    timeTrigger = UNTimeIntervalNotificationTrigger(
+        timeInterval=0, repeats=False
+    )
+
     notification_center = _default_user_notification_center()
-    notification_center.scheduleNotification_(notification)
+    notification_center.add(request)
 
 
 class Notification(compat.collections_abc.Mapping):
