@@ -3,7 +3,6 @@
 _ENABLED = True
 try:
     from UserNotifications import UNUserNotificationCenter,UNTimeIntervalNotificationTrigger,UNMutableNotificationContent,UNNotificationActionIcon,UNNotificationRequest
-    from Foundation import NSUserNotification, NSUserNotificationCenter
 except ImportError as e:
     print(e)
     _ENABLED = False
@@ -76,7 +75,7 @@ def _gather_info_issue_9():  # pragma: no cover
 
 
 def _default_user_notification_center():
-    notification_center = UNUserNotificationCenter.current()
+    notification_center = UNUserNotificationCenter.currentNotificationCenter()
     if notification_center is None:  # pragma: no cover
         info = (
             'Failed to setup the notification center. This issue occurs when the "Info.plist" file '
@@ -97,8 +96,8 @@ def _init_nsapp(nsapp):
             notification_center = _default_user_notification_center()
         except RuntimeError:
             pass
-        else:
-            notification_center.setDelegate_(nsapp)
+        # else:
+        #     notification_center.setDelegate_(nsapp)
 
 
 @_internal.guard_unexpected_errors
@@ -164,21 +163,20 @@ def notify(title, subtitle, message, data=None, sound=True,
     _internal.require_string_or_none(title, subtitle, message)
 
 
-    content = UNMutableNotificationContent()
+    content = UNMutableNotificationContent.alloc().init()
 
     # notification = NSUserNotification.alloc().init()
 
     content.setTitle_(title)
     content.setSubtitle_(subtitle)
-    content.setInformativeText_(message)
 
-    if data is not None:
-        app = getattr(rumps.App, '*app_instance', rumps.App)
-        dumped = app.serializer.dumps(data)
-        objc_string = _internal.string_to_objc(dumped)
-        ns_dict = Foundation.NSMutableDictionary.alloc().init()
-        ns_dict.setDictionary_({'value': objc_string})
-        content.setUserInfo_(ns_dict)
+    # if data is not None:
+    #     app = getattr(rumps.App, '*app_instance', rumps.App)
+    #     dumped = app.serializer.dumps(data)
+    #     objc_string = _internal.string_to_objc(dumped)
+    #     ns_dict = Foundation.NSMutableDictionary.alloc().init()
+    #     ns_dict.setDictionary_({'value': objc_string})
+    #     content.setUserInfo_(ns_dict)
 
     # if icon is not None:
     #     content.set_identityImage_(rumps._nsimage_from_file(icon))
@@ -195,17 +193,24 @@ def notify(title, subtitle, message, data=None, sound=True,
     # if ignoreDnD:
     #     notification.set_ignoresDoNotDisturb_(True)
 
-    request = UNNotificationRequest(
-        identifier="LocalNotification",
-        content=content, 
-        trigger=timeTrigger
-    )
-    timeTrigger = UNTimeIntervalNotificationTrigger(
-        timeInterval=0, repeats=False
-    )
+    # timeTrigger = UNTimeIntervalNotificationTrigger(
+    #     repeats=False
+    # )
+
+    r = UNNotificationRequest.requestWithIdentifier_content_trigger_(
+        'local', content, None)
+
+    def notif_callback(err):
+        print(f"Error in notification callback: {err}")
+
+
+    def auth_callback(granted, err):
+        print(f"Granted: {granted}")
+        print(f"Error in authorization request: {err}")
 
     notification_center = _default_user_notification_center()
-    notification_center.add(request)
+    notification_center.requestAuthorizationWithOptions_completionHandler_(0b111111, auth_callback)
+    notification_center.addNotificationRequest_withCompletionHandler_(r, notif_callback)
 
 
 class Notification(compat.collections_abc.Mapping):
