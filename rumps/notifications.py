@@ -4,7 +4,8 @@ _ENABLED = True
 try:
     from UserNotifications import UNUserNotificationCenter,UNTimeIntervalNotificationTrigger,UNMutableNotificationContent,UNNotificationActionIcon,UNNotificationRequest
     from Foundation import NSUserNotification, NSUserNotificationCenter
-except ImportError:
+except ImportError as e:
+    print(e)
     _ENABLED = False
 
 import datetime
