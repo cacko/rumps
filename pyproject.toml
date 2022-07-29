@@ -1,12 +1,18 @@
 [tool.poetry]
 name = "rumps"
-version = "0.1.0"
+version = "0.5.3"
 description = ""
 authors = ["cacko <alex@cacko.net>"]
+
+[[tool.poetry.source]]
+name = "cacko"
+secondary = true
+url = "https://pypi.cacko.net/simple/"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pyobjc = "^8.5"
+appdir = "^0.2"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"

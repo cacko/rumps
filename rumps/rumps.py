@@ -15,6 +15,8 @@ from Foundation import (NSDate, NSTimer, NSRunLoop, NSDefaultRunLoopMode, NSSear
 from AppKit import NSApplication, NSStatusBar, NSMenu, NSMenuItem, NSAlert, NSTextField, NSSecureTextField, NSImage, NSSlider, NSSize, NSWorkspace, NSWorkspaceWillSleepNotification, NSWorkspaceDidWakeNotification, NSWorkspaceScreensDidWakeNotification, NSWorkspaceScreensDidSleepNotification
 from PyObjCTools import AppHelper
 
+import pickle as pickle
+
 import os
 import pickle
 import traceback
@@ -23,6 +25,7 @@ import weakref
 from .compat import text_type, string_types, iteritems, collections_abc
 from .text_field import Editing, SecureEditing
 from .utils import ListDict
+from appdir import get_app_dir
 
 from . import _internal
 from . import events
