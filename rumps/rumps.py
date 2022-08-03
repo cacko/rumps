@@ -1014,11 +1014,11 @@ class NSApp(NSObject):
         self._media_now_playing_center = MPNowPlayingInfoCenter.defaultCenter()
 
         # Enable Commands
-        cmd_center.playCommand().addTargetWithHandler_(self.receiveMediaPlay)
-        cmd_center.pauseCommand().addTargetWithHandler_(self.receiveMediaPause)
-        cmd_center.togglePlayPauseCommand().addTargetWithHandler_(self.receiveMediaToggle)
-        cmd_center.nextTrackCommand().addTargetWithHandler_(self.receiveMediaNext)
-        cmd_center.previousTrackCommand().addTargetWithHandler_(self.receiveMediaPrev)
+        self._media_cmd_center.playCommand().addTargetWithHandler_(self.receiveMediaPlay)
+        self._media_cmd_center.pauseCommand().addTargetWithHandler_(self.receiveMediaPause)
+        self._media_cmd_center.togglePlayPauseCommand().addTargetWithHandler_(self.receiveMediaToggle)
+        self._media_cmd_center.nextTrackCommand().addTargetWithHandler_(self.receiveMediaNext)
+        self._media_cmd_center.previousTrackCommand().addTargetWithHandler_(self.receiveMediaPrev)
 
         workspace = NSWorkspace.sharedWorkspace()
         notificationCenter = workspace.notificationCenter()
@@ -1047,23 +1047,23 @@ class NSApp(NSObject):
             None
         )
 
-    def receiveMediaPlay(self, ns_notification):
+    def receiveMediaPlay(self):
         _log('media on play')
         events.on_media_play.emit()
 
-    def receiveMediaPause(self, ns_notification):
+    def receiveMediaPause(self):
         _log('media on pause')
         events.on_media_pause.emit()
 
-    def receiveMediaToggle(self, ns_notification):
+    def receiveMediaToggle(self):
         _log('media on toggle')
         events.on_media_toggle.emit()
     
-    def receiveMediaNext(self, ns_notification):
+    def receiveMediaNext(self):
         _log('media on next')
         events.on_media_next.emit()
 
-    def receiveMediaPrev(self, ns_notification):
+    def receiveMediaPrev(self):
         _log('media on prev')
         events.on_media_prev.emit()
 
