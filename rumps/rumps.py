@@ -34,17 +34,7 @@ from AppKit import NSImage
 from AppKit import NSMakeRect
 from AppKit import NSCompositingOperationSourceOver
 from Foundation import NSMutableDictionary
-from MediaPlayer import MPNowPlayingInfoCenter
-from MediaPlayer import MPRemoteCommandCenter
-from MediaPlayer import MPMediaItemArtwork
-from MediaPlayer import MPMediaItemPropertyTitle
-from MediaPlayer import MPMediaItemPropertyArtist
-from MediaPlayer import MPMediaItemPropertyPlaybackDuration
-from MediaPlayer import MPMediaItemPropertyArtwork
-from MediaPlayer import MPMusicPlaybackState
-from MediaPlayer import MPMusicPlaybackStatePlaying
-from MediaPlayer import MPMusicPlaybackStatePaused
-from MediaPlayer import MPMusicPlaybackStateStopped
+
 
 _TIMERS = weakref.WeakKeyDictionary()
 separator = object()
@@ -969,8 +959,6 @@ class NSApp(NSObject):
     """Objective-C delegate class for NSApplication. Don't instantiate - use App instead."""
 
     _ns_to_py_and_callback = {}
-    _media_cmd_center = None
-    _media_now_playing_center = None
 
     def userNotificationCenter_didActivateNotification_(self, notification_center, notification):
         notifications._clicked(notification_center, notification)
@@ -1009,17 +997,6 @@ class NSApp(NSObject):
     
 
     def applicationDidFinishLaunching_(self, notification):
-
-        self._media_cmd_center = MPRemoteCommandCenter.sharedCommandCenter()
-        self._media_now_playing_center = MPNowPlayingInfoCenter.defaultCenter()
-
-        # Enable Commands
-        self._media_cmd_center.playCommand().addTargetWithHandler_(self.receiveMediaPlay)
-        self._media_cmd_center.pauseCommand().addTargetWithHandler_(self.receiveMediaPause)
-        self._media_cmd_center.togglePlayPauseCommand().addTargetWithHandler_(self.receiveMediaToggle)
-        self._media_cmd_center.nextTrackCommand().addTargetWithHandler_(self.receiveMediaNext)
-        self._media_cmd_center.previousTrackCommand().addTargetWithHandler_(self.receiveMediaPrev)
-
         workspace = NSWorkspace.sharedWorkspace()
         notificationCenter = workspace.notificationCenter()
         notificationCenter.addObserver_selector_name_object_(
@@ -1046,26 +1023,6 @@ class NSApp(NSObject):
             NSWorkspaceScreensDidWakeNotification,
             None
         )
-
-    def receiveMediaPlay(self):
-        _log('media on play')
-        events.on_media_play.emit()
-
-    def receiveMediaPause(self):
-        _log('media on pause')
-        events.on_media_pause.emit()
-
-    def receiveMediaToggle(self):
-        _log('media on toggle')
-        events.on_media_toggle.emit()
-    
-    def receiveMediaNext(self):
-        _log('media on next')
-        events.on_media_next.emit()
-
-    def receiveMediaPrev(self):
-        _log('media on prev')
-        events.on_media_prev.emit()
 
     def receiveSleepNotification_(self, ns_notification):
         _log('receiveSleepNotification')
@@ -1259,14 +1216,6 @@ class App(object):
         """
         return open(os.path.join(self._application_support, args[0]), *args[1:])
 
-    @property
-    def nowPlayingInfo(self) -> MPNowPlayingInfoCenter:
-        return self._nsapp._media_now_playing_center
-
-    @property
-    def mediaCmdCenter(self) -> MPRemoteCommandCenter:
-        return self._nsapp._media_cmd_center
-
     # Run the application
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1336,20 +1285,4 @@ class App(object):
 
         To be overridden in your app
         """
-        pass
-
-    def media_play(self):
-        pass
-
-
-    def media_pause(self):
-        pass
-
-    def media_next(self):
-        pass
-
-    def media_prev(self):
-        pass
-
-    def media_toggle(self):
         pass
