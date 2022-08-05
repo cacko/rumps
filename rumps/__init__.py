@@ -17,12 +17,11 @@ statusbar application.
 """
 
 __title__ = 'rumps'
-__version__ = '0.5.8'
+__version__ = '0.5.9'
 __author__ = 'Jared Suttles'
 __license__ = 'Modified BSD'
 __copyright__ = 'Copyright 2020 Jared Suttles'
 
-from . import notifications as _notifications
 from .rumps import (
     separator,
     debug_mode,
@@ -40,6 +39,3 @@ from .rumps import (
     App,
     slider
 )
-
-notifications = _notifications.on_notification
-notification = _notifications.notify

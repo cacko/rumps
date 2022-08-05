@@ -25,14 +25,11 @@ import weakref
 from .compat import text_type, string_types, iteritems, collections_abc
 from .text_field import Editing, SecureEditing
 from .utils import ListDict
-from appdir import get_app_dir
 
 from . import _internal
 from . import events
-from . import notifications
 from AppKit import NSImage
 from AppKit import NSMakeRect
-from AppKit import NSCompositingOperationSourceOver
 from Foundation import NSMutableDictionary
 
 
@@ -960,9 +957,6 @@ class NSApp(NSObject):
 
     _ns_to_py_and_callback = {}
 
-    def userNotificationCenter_didActivateNotification_(self, notification_center, notification):
-        notifications._clicked(notification_center, notification)
-
     def initializeStatusBar(self):
         self.nsstatusitem = NSStatusBar.systemStatusBar(
         ).statusItemWithLength_(-1)  # variable dimensions
@@ -1239,7 +1233,6 @@ class App(object):
         # allow for dynamic modification based on this App instance
         self._nsapp._app = self.__dict__
         nsapplication.setDelegate_(self._nsapp)
-        notifications._init_nsapp(self._nsapp)
 
         # class level ref to running instance (for passing self to App subclasses)
         setattr(App, '*app_instance', self)
