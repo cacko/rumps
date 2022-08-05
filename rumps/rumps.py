@@ -994,8 +994,6 @@ class NSApp(NSObject):
         if not (self.nsstatusitem.title() or self.nsstatusitem.image()):
             self.nsstatusitem.setTitle_(self._app['_name'])
 
-    
-
     def applicationDidFinishLaunching_(self, notification):
         workspace = NSWorkspace.sharedWorkspace()
         notificationCenter = workspace.notificationCenter()
@@ -1257,7 +1255,10 @@ class App(object):
 
         AppHelper.installMachInterrupt()
         events.before_start.emit()
-        AppHelper.runEventLoop()
+        try:
+            AppHelper.runEventLoop()
+        except:
+            events.before_quit.emit()
 
     def sleep(self):
         """Method being run when system is going to sleep
