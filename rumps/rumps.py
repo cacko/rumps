@@ -1149,11 +1149,11 @@ class App(object):
             self._icon = icon_path
             self._icon_nsimage = new_icon
         else:
-            image = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(
-                icon_path, None)
-            image.setTemplate_(True)
-            self._icon = icon_path
-            self._icon_nsimage = image
+            if image := Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(
+                icon_path, None):
+                image.setTemplate_(True)
+                self._icon = icon_path
+                self._icon_nsimage = image
         try:
             self._nsapp.setStatusBarIcon()
         except AttributeError:
