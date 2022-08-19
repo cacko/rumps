@@ -142,6 +142,13 @@ def _nsimage_from_file(filename, dimensions=None, template=None):
     return image
 
 
+def _nsimage_system_symbol_name(symbol_name: str):
+    image = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(
+        symbol_name, None)
+    image.setTemplate_(True)
+    return image
+
+
 # Decorators and helper function serving to register functions for dealing with interaction and events
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def timer(interval):
@@ -529,10 +536,7 @@ class MenuItem(Menu):
                 icon_path, dimensions, template) if icon_path is not None else None
             self._icon = icon_path
             self._menuitem.setImage_(new_icon)
-        else:
-            new_icon = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(
-                icon_path, None)
-            new_icon.setTemplate_(True)
+        elif new_icon := _nsimage_system_symbol_name(icon_path):
             self._icon = icon_path
             self._menuitem.setImage_(new_icon)
 
@@ -872,8 +876,14 @@ class Window(object):
 
     @icon.setter
     def icon(self, icon_path):
-        new_icon = _nsimage_from_file(
-            icon_path) if icon_path is not None else None
+        new_icon = None
+        if not icon_path:
+            pass
+        elif Path(icon_path).exists():
+            new_icon = _nsimage_from_file(
+                icon_path) if icon_path is not None else None
+        elif symbol := _nsimage_system_symbol_name(icon_path):
+            new_icon = symbol
         self._icon = icon_path
         self._alert.setIcon_(new_icon)
 
@@ -1148,12 +1158,9 @@ class App(object):
                 icon_path, template=self._template) if icon_path is not None else None
             self._icon = icon_path
             self._icon_nsimage = new_icon
-        else:
-            if image := Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(
-                icon_path, None):
-                image.setTemplate_(True)
-                self._icon = icon_path
-                self._icon_nsimage = image
+        elif image := _nsimage_system_symbol_name(icon_path):
+            self._icon = icon_path
+            self._icon_nsimage = image
         try:
             self._nsapp.setStatusBarIcon()
         except AttributeError:
