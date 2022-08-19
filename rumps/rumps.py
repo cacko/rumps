@@ -9,7 +9,7 @@
 # See: http://stackoverflow.com/questions/21058889/pyinstaller-not-finding-pyobjc-library-macos-python
 import Foundation
 import AppKit
-
+import Cocoa
 from Foundation import (NSDate, NSTimer, NSRunLoop, NSDefaultRunLoopMode, NSSearchPathForDirectoriesInDomains,
                         NSMakeRect, NSLog, NSObject, NSMutableDictionary, NSString, NSUserDefaults)
 from AppKit import NSApplication, NSStatusBar, NSMenu, NSMenuItem, NSAlert, NSTextField, NSSecureTextField, NSImage, NSSlider, NSSize, NSWorkspace, NSWorkspaceWillSleepNotification, NSWorkspaceDidWakeNotification, NSWorkspaceScreensDidWakeNotification, NSWorkspaceScreensDidSleepNotification
@@ -520,10 +520,17 @@ class MenuItem(Menu):
         :param dimensions: a sequence of numbers whose length is two.
         :param template: a boolean who defines the template mode for the icon.
         """
-        new_icon = _nsimage_from_file(
-            icon_path, dimensions, template) if icon_path is not None else None
-        self._icon = icon_path
-        self._menuitem.setImage_(new_icon)
+
+        if not icon_path.endswith(".png"):
+            new_icon = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(icon_path, None)
+            new_icon.setTemplate_(True)
+            self._icon = icon_path
+            self._menuitem.setImage_(new_icon)
+        else:
+            new_icon = _nsimage_from_file(
+                icon_path, dimensions, template) if icon_path is not None else None
+            self._icon = icon_path
+            self._menuitem.setImage_(new_icon)
 
     @property
     def state(self):
@@ -1129,10 +1136,16 @@ class App(object):
 
     @icon.setter
     def icon(self, icon_path):
-        new_icon = _nsimage_from_file(
-            icon_path, template=self._template) if icon_path is not None else None
-        self._icon = icon_path
-        self._icon_nsimage = new_icon
+        if not icon_path.endswith(".png"):
+            image = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(icon_path, None)
+            image.setTemplate_(True)
+            self._icon = icon_path
+            self._icon_nsimage = image
+        else:
+            new_icon = _nsimage_from_file(
+                icon_path, template=self._template) if icon_path is not None else None
+            self._icon = icon_path
+            self._icon_nsimage = new_icon
         try:
             self._nsapp.setStatusBarIcon()
         except AttributeError:
