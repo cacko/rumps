@@ -21,6 +21,7 @@ import os
 import pickle
 import traceback
 import weakref
+from pathlib import Path
 
 from .compat import text_type, string_types, iteritems, collections_abc
 from .text_field import Editing, SecureEditing
@@ -521,14 +522,14 @@ class MenuItem(Menu):
         :param template: a boolean who defines the template mode for the icon.
         """
 
-        if not icon_path.endswith(".png"):
-            new_icon = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(icon_path, None)
-            new_icon.setTemplate_(True)
+        if Path(icon_path).exists():
+            new_icon = _nsimage_from_file(
+                icon_path, dimensions, template) if icon_path is not None else None
             self._icon = icon_path
             self._menuitem.setImage_(new_icon)
         else:
-            new_icon = _nsimage_from_file(
-                icon_path, dimensions, template) if icon_path is not None else None
+            new_icon = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(icon_path, None)
+            new_icon.setTemplate_(True)
             self._icon = icon_path
             self._menuitem.setImage_(new_icon)
 
@@ -1136,16 +1137,16 @@ class App(object):
 
     @icon.setter
     def icon(self, icon_path):
-        if not icon_path.endswith(".png"):
-            image = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(icon_path, None)
-            image.setTemplate_(True)
-            self._icon = icon_path
-            self._icon_nsimage = image
-        else:
+        if Path(icon_path).exists():
             new_icon = _nsimage_from_file(
                 icon_path, template=self._template) if icon_path is not None else None
             self._icon = icon_path
             self._icon_nsimage = new_icon
+        else:
+            image = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(icon_path, None)
+            image.setTemplate_(True)
+            self._icon = icon_path
+            self._icon_nsimage = image
         try:
             self._nsapp.setStatusBarIcon()
         except AttributeError:
