@@ -8,7 +8,7 @@ vars:
 tasks:
   default:
     cmds:
-      - poetry run python -m jironimo menu
+      - conda run --live-stream -n {{.PROJECT}} python -m jironimo menu
     silent: true
 
   push:
@@ -22,7 +22,7 @@ tasks:
     desc: build
     cmds:
       - rm -rf dist/*
-      - poetry run python setup.py bdist_wheel
+      - ponda run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
 
   install:
     desc: install
