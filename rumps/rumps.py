@@ -25,9 +25,8 @@ from pathlib import Path
 
 from .text_field import Editing, SecureEditing
 from .utils import ListDict
-from .compat import string_types, text_type
-from . import _internal
-from . import events
+from rumps.compat import string_types, text_type
+from rumps import _internal, events
 from AppKit import NSImage
 from AppKit import NSMakeRect
 from Foundation import NSMutableDictionary
