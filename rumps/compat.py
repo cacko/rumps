@@ -21,4 +21,4 @@ string_types = (str,)
 
 iteritems = lambda d: iter(d.items())
 
-import collections.abc as collections_abc
+import collections as collections_abc
