@@ -22,7 +22,7 @@ tasks:
     desc: build
     cmds:
       - rm -rf dist/*
-      - ponda run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
+      - conda run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
 
   install:
     desc: install
