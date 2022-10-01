@@ -325,8 +325,8 @@ class Menu(ListDict):
                 menu.add(iterable)
                 return
 
-            for n, ele in enumerate(iter(iterable.items())) if isinstance(iterable, typing.Mapping) else iterable:
-
+            for n, ele in enumerate(iter(iterable.items()) if isinstance(iterable, typing.Mapping) else iterable):
+                
                 # for mappings we recurse but don't drop down a level in the menu
                 if not isinstance(ele, MenuItem) and isinstance(ele, typing.Mapping):
                     parse_menu(ele, menu, depth)
