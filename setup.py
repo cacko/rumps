@@ -53,7 +53,7 @@ setup(
     description='Ridiculously Uncomplicated MacOS Python Statusbar apps.',
     author='Jared Suttles',
     url='https://github.com/jaredks/rumps',
-    packages=['rumps', 'rumps.packages'],
+    packages=['rumps'],
     package_data={'': ['LICENSE']},
     license='BSD License',
     install_requires=[
@@ -79,31 +79,3 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]
 )
-
-# if this looks like a virtualenv
-if hasattr(sys, 'real_prefix'):
-    print('=' * 64)
-    print(
-        '\n'
-        'It looks like we are inside a virtualenv. Attempting to apply fix.\n'
-    )
-    try:
-        fix_virtualenv()
-    except Exception:
-        traceback.print_exc()
-        print(
-            'WARNING: Could not fix virtualenv. UI interaction likely will '
-            'not function properly.\n'
-        )
-    else:
-        print(
-            'Applied best-effort fix for virtualenv to support proper UI '
-            'interaction.\n'
-        )
-    print(
-        'Use of venv is suggested for creating virtual environments:'
-        '\n\n'
-        '    python3 -m venv env'
-        '\n'
-    )
-    print('=' * 64)

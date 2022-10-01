@@ -1,3 +1,0 @@
-[submodule "pyobjc"]
-	path = pyobjc
-	url = git@github.com:ronaldoussoren/pyobjc.git
