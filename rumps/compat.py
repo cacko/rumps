@@ -20,5 +20,3 @@ text_type = str
 string_types = (str,)
 
 iteritems = lambda d: iter(d.items())
-
-import collections as collections_abc

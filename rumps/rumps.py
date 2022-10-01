@@ -7,6 +7,8 @@
 
 # For compatibility with pyinstaller
 # See: http://stackoverflow.com/questions/21058889/pyinstaller-not-finding-pyobjc-library-macos-python
+import itertools
+import typing
 import Foundation
 import AppKit
 import Cocoa
@@ -22,6 +24,7 @@ import pickle
 import traceback
 import weakref
 from pathlib import Path
+import collections
 
 from .text_field import Editing, SecureEditing
 from .utils import ListDict
@@ -322,14 +325,14 @@ class Menu(ListDict):
                 menu.add(iterable)
                 return
 
-            for n, ele in enumerate(iteritems(iterable) if isinstance(iterable, collections_abc.Mapping) else iterable):
+            for n, ele in enumerate(iterable.items()) if isinstance(iterable, typing.Mapping) else iterable:
 
                 # for mappings we recurse but don't drop down a level in the menu
-                if not isinstance(ele, MenuItem) and isinstance(ele, collections_abc.Mapping):
+                if not isinstance(ele, MenuItem) and isinstance(ele, typing.Mapping):
                     parse_menu(ele, menu, depth)
 
                 # any iterables other than strings and MenuItems
-                elif not isinstance(ele, (string_types, MenuItem)) and isinstance(ele, collections_abc.Iterable):
+                elif not isinstance(ele, (string_types, MenuItem)) and isinstance(ele, typing.Iterable):
                     try:
                         menuitem, submenu = ele
                     except TypeError:
