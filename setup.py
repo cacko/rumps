@@ -6,6 +6,7 @@ import sys
 import traceback
 from pathlib import Path
 import semver
+from rumps import __title__
 
 from setuptools import setup
 
@@ -37,7 +38,7 @@ def fix_virtualenv():
 
 def version():
     if len(sys.argv) > 1 and sys.argv[1] == "bdist_wheel":
-        init = Path(__file__).parent / __name__ / "version.py"
+        init = Path(__file__).parent / __title__ / "version.py"
         _, v = init.read_text().strip().split(" = ")
         cv = semver.VersionInfo.parse(v.strip('"'))
         nv = f"{cv.bump_patch()}"
@@ -47,7 +48,7 @@ def version():
     return __version__
 
 setup(
-    name='rumps',
+    name=__title__,
     version=version(),
     description='Ridiculously Uncomplicated MacOS Python Statusbar apps.',
     author='Jared Suttles',
