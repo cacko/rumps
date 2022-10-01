@@ -57,7 +57,7 @@ setup(
     package_data={'': ['LICENSE']},
     license='BSD License',
     install_requires=[
-        'pyobjc',
+        'pyobjc>=8.5.1',
         "appdir",
     ],
     extras_require={
