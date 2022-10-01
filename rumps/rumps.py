@@ -23,10 +23,9 @@ import traceback
 import weakref
 from pathlib import Path
 
-from .compat import text_type, string_types, iteritems, collections_abc
 from .text_field import Editing, SecureEditing
 from .utils import ListDict
-
+from .compat import string_types, text_type
 from . import _internal
 from . import events
 from AppKit import NSImage
@@ -76,13 +75,9 @@ def alert(title=None, message='', ok=None, cancel=None, other=None, icon_path=No
     :param icon_path: a path to an image. If ``None``, the applications icon is used.
     :return: a number representing the button pressed. The "ok" button is ``1`` and "cancel" is ``0``.
     """
-    message = text_type(message)
     message = message.replace('%', '%%')
-    if title is not None:
-        title = text_type(title)
     _internal.require_string_or_none(ok)
-    if not isinstance(cancel, string_types):
-        cancel = 'Cancel' if cancel else None
+    cancel = 'Cancel' if cancel else None
     alert = NSAlert.alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat_(
         title, ok, cancel, other, message)
     if NSUserDefaults.standardUserDefaults().stringForKey_('AppleInterfaceStyle') == 'Dark':
@@ -1093,7 +1088,7 @@ class App(object):
     #: A serializer for notification data.  The default is pickle.
     serializer = pickle
 
-    def __init__(self, name, title=None, icon=None, template=None, menu=None, quit_button='Quit'):
+    def __init__(self, name, title=None, icon=None, template=None, menu=None, quit_button=None):
         _internal.require_string(name)
         self._name = name
         self._icon = self._icon_nsimage = self._title = None

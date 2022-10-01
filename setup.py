@@ -2,9 +2,10 @@
 
 import errno
 import os
-import re
 import sys
 import traceback
+from pathlib import Path
+import semver
 
 from setuptools import setup
 
@@ -33,25 +34,30 @@ def fix_virtualenv():
         f.write(INFO_PLIST_TEMPLATE % {'name': 'rumps'})
 
 
-with open('README.rst') as f:
-    readme = f.read()
-with open('CHANGES.rst') as f:
-    changes = f.read()
-with open('rumps/__init__.py') as f:
-    version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
+
+def version():
+    if len(sys.argv) > 1 and sys.argv[1] == "bdist_wheel":
+        init = Path(__file__).parent / __name__ / "version.py"
+        _, v = init.read_text().strip().split(" = ")
+        cv = semver.VersionInfo.parse(v.strip('"'))
+        nv = f"{cv.bump_patch()}"
+        init.write_text(f'__version__ = "{nv}"')
+        return nv
+    from rumps.version import __version__
+    return __version__
 
 setup(
     name='rumps',
-    version=version,
+    version=version(),
     description='Ridiculously Uncomplicated MacOS Python Statusbar apps.',
     author='Jared Suttles',
     url='https://github.com/jaredks/rumps',
     packages=['rumps', 'rumps.packages'],
     package_data={'': ['LICENSE']},
-    long_description=readme + '\n\n' + changes,
     license='BSD License',
     install_requires=[
-        'pyobjc'
+        'pyobjc',
+        "appdir",
     ],
     extras_require={
         'dev': [
