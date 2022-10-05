@@ -34,7 +34,6 @@ from .rumps import (
     Menu,
     SliderMenuItem,
     Timer,
-    Window,
     App,
     slider
 )

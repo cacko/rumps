@@ -6,10 +6,6 @@ vars:
   PROJECT: rumps
 
 tasks:
-  default:
-    cmds:
-      - conda run --live-stream -n {{.PROJECT}} python -m jironimo menu
-    silent: true
 
   push:
     desc: commit and pushes current changes
@@ -22,7 +18,7 @@ tasks:
     desc: build
     cmds:
       - rm -rf dist/*
-      - conda run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
+      - mamba run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
 
   install:
     desc: install

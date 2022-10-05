@@ -3,7 +3,6 @@
 import errno
 import os
 import sys
-import traceback
 from pathlib import Path
 import semver
 from rumps import __title__
