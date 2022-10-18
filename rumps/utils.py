@@ -14,5 +14,8 @@ class ListDict(OrderedDict):
         self.__insertion(self[existing_key], key_value)
 
     def insert_before(self, existing_key, key_value):
-        print(f"rumps in {self[existing_key]}")
-        self.__insertion(self[existing_key][0], key_value)
+        try:
+            self.__insertion(self[existing_key][0], key_value)
+        except KeyError:
+            self.__insertion(self[existing_key], key_value)
+
