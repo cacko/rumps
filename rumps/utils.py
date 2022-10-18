@@ -14,4 +14,4 @@ class ListDict(OrderedDict):
         self.__insertion(self[existing_key], key_value)
 
     def insert_before(self, existing_key, key_value):
-        self.__insertion(self[existing_key][0], key_value)
+        self.__insertion(self[existing_key], key_value)
