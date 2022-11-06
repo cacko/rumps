@@ -3,7 +3,7 @@ from collections import OrderedDict
 class ListDict(OrderedDict):
     def __insertion(self, link_prev, key_value):
         key, value = key_value
-        if link_prev[2] != key:
+        if link_prev and isinstance(link_prev, list) and len(link_prev) > 2 and link_prev[2] != key:
             if key in self:
                 del self[key]
             link_next = link_prev[1]
@@ -15,7 +15,11 @@ class ListDict(OrderedDict):
 
     def insert_before(self, existing_key, key_value):
         try:
-            self.__insertion(self[existing_key][0], key_value)
-        except KeyError:
+            if self[existing_key] and isinstance(self[existing_key],  list):
+                self.__insertion(self[existing_key][0], key_value)
+            else:
+                self.__insertion(self[existing_key], key_value)
+
+        except:
             self.__insertion(self[existing_key], key_value)
 
