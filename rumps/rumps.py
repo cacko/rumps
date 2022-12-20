@@ -914,6 +914,7 @@ class App(object):
 
     #: A serializer for notification data.  The default is pickle.
     serializer = pickle
+    assertion_id = None
 
     def __init__(self, name, title=None, icon=None, template=None, menu=None, quit_button=None, nosleep=False):
         _internal.require_string(name)
