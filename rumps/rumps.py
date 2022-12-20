@@ -18,7 +18,8 @@ from Foundation import (
     NSSearchPathForDirectoriesInDomains,
     NSLog, 
     NSObject, 
-    NSUserDefaults
+    NSUserDefaults,
+    NSBundle
 )
 from AppKit import (
     NSApplication, 
@@ -38,7 +39,7 @@ from AppKit import (
 from PyObjCTools import AppHelper
 
 import pickle as pickle
-
+import objc
 import os
 import pickle
 import traceback
@@ -47,7 +48,21 @@ from pathlib import Path
 from .utils import ListDict
 from rumps.compat import string_types, text_type
 from rumps import _internal, events
+# https://developer.apple.com/documentation/iokit/iopowersources.h?language=objc
+IOKit = NSBundle.bundleWithIdentifier_('com.apple.framework.IOKit')
 
+functions = [("IOPMAssertionCreateWithName", b"i@i@o^i"),
+             ("IOPMAssertionRelease", b"vi"),
+             ("IOPSGetPowerSourceDescription", b"@@@"),
+             ("IOPSCopyPowerSourcesInfo", b"@"),
+             ("IOPSCopyPowerSourcesList", b"@@"),
+             ("IOPSGetProvidingPowerSourceType", b"@@"),
+            ]
+
+# No idea why PyLint complains about objc.loadBundleFunctions
+# pylint: disable=no-member
+objc.loadBundleFunctions(IOKit, globals(), functions)
+# pylint: enable=no-member
 
 _TIMERS = weakref.WeakKeyDictionary()
 separator = object()
@@ -900,9 +915,10 @@ class App(object):
     #: A serializer for notification data.  The default is pickle.
     serializer = pickle
 
-    def __init__(self, name, title=None, icon=None, template=None, menu=None, quit_button=None):
+    def __init__(self, name, title=None, icon=None, template=None, menu=None, quit_button=None, nosleep=False):
         _internal.require_string(name)
         self._name = name
+        self._nosleep = nosleep
         self._icon = self._icon_nsimage = self._title = None
         self._template = template
         self.icon = icon
@@ -1084,8 +1100,12 @@ class App(object):
         AppHelper.installMachInterrupt()
         events.before_start.emit()
         try:
+            if not self._nosleep:
+                self.assertion_id = assertNoIdleSleep(reason=reason)
             AppHelper.runEventLoop()
         except:
+            if self.assertion_id:
+                removeNoIdleSleepAssertion(self.assertion_id)
             events.before_quit.emit()
 
     def sleep(self):
@@ -1115,3 +1135,25 @@ class App(object):
         To be overridden in your app
         """
         pass
+
+    def assertNoIdleSleep(reason=None):
+        """Uses IOKit functions to prevent idle sleep."""
+        kIOPMAssertionTypeNoIdleSleep = "NoIdleSleepAssertion"
+        kIOPMAssertionLevelOn = 255
+        if not reason:
+            reason = 'Munki is installing software'
+        # pylint: disable=undefined-variable
+        errcode, assertID = IOPMAssertionCreateWithName(
+            kIOPMAssertionTypeNoIdleSleep,
+            kIOPMAssertionLevelOn,
+            reason, None)
+        # pylint: enable=undefined-variable
+        if errcode:
+            return None
+        return assertID
+
+    def removeNoIdleSleepAssertion(assertion_id):
+        """Uses IOKit functions to remove a "no idle sleep" assertion."""
+        if assertion_id:
+            # pylint: disable=undefined-variable
+            IOPMAssertionRelease(assertion_id)
