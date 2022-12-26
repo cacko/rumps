@@ -1105,8 +1105,6 @@ class App(object):
                 self.assertion_id = assertNoIdleSleep(reason=reason)
             AppHelper.runEventLoop()
         except:
-            if self.assertion_id:
-                removeNoIdleSleepAssertion(self.assertion_id)
             events.before_quit.emit()
 
     def sleep(self):
