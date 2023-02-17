@@ -489,7 +489,8 @@ class MenuItem(Menu):
         self._menu = self._icon = None
         self.set_callback(callback, key)
         self._template = template
-        self.set_icon(icon, dimensions, template)
+        if icon:
+            self.set_icon(icon, dimensions, template)
         super(MenuItem, self).__init__()
 
     def __setitem__(self, key, value):
