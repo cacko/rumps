@@ -1102,8 +1102,11 @@ class App(object):
         AppHelper.installMachInterrupt()
         events.before_start.emit()
         try:
-            if not self._nosleep:
-                self.assertion_id = assertNoIdleSleep(reason=reason)
+            if self._nosleep:
+                self.assertion_id = self.assertNoIdleSleep()
+        except:
+            pass
+        try:
             AppHelper.runEventLoop()
         except:
             events.before_quit.emit()
@@ -1143,7 +1146,7 @@ class App(object):
         if not reason:
             reason = 'Munki is installing software'
         # pylint: disable=undefined-variable
-        errcode, assertID = IOPMAssertionCreateWithName(
+        errcode, assertID = IOPMAssertionCreateWithName(  # type: ignore
             kIOPMAssertionTypeNoIdleSleep,
             kIOPMAssertionLevelOn,
             reason, None)
@@ -1156,4 +1159,4 @@ class App(object):
         """Uses IOKit functions to remove a "no idle sleep" assertion."""
         if assertion_id:
             # pylint: disable=undefined-variable
-            IOPMAssertionRelease(assertion_id)
+            IOPMAssertionRelease(assertion_id) # type: ignore
