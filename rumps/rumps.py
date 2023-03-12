@@ -819,6 +819,7 @@ class NSApp(NSObject):
                  'should have a callback of quit_application or call it indirectly.')
         # mainmenu of our status bar spot (_menu attribute is NSMenu)
         self.nsstatusitem.setMenu_(mainmenu._menu)
+        mainmenu._menu.setDelegate_(self)
 
     def setStatusBarTitle(self):
         self.nsstatusitem.setTitle_(self._app['_title'])
@@ -879,6 +880,14 @@ class NSApp(NSObject):
     def applicationWillTerminate_(self, ns_notification):
         _log('applicationWillTerminate')
         events.before_quit.emit()
+        
+    def menuWillOpen(self, menu: NSMenu):
+        pass
+    
+
+    def menuDidClose(self, menu: NSMenu):
+        pass
+
 
     @classmethod
     def callback_(cls, nsmenuitem):
