@@ -882,10 +882,13 @@ class NSApp(NSObject):
         events.before_quit.emit()
         
     def menuWillOpen(self, *args, **kwargs):
-        pass
+        _log('menuWillOpen')
+        events.on_menu_open.emit()
 
     def menuDidClose(self, *args, **kwargs):
-        pass
+        _log('menuDidClose')
+        events.on_menu_close.emit()
+
 
 
     @classmethod
@@ -1142,6 +1145,20 @@ class App(object):
 
     def screen_wake(self):
         """Method being run when system awakes from sleep
+
+        To be overridden in your app
+        """
+        pass
+    
+    def menu_open(self):
+        """Method being run when main menu is opened
+
+        To be overridden in your app
+        """
+        pass
+    
+    def menu_close(self):
+        """Method being run when main menu is close
 
         To be overridden in your app
         """
