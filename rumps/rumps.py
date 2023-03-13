@@ -881,11 +881,10 @@ class NSApp(NSObject):
         _log('applicationWillTerminate')
         events.before_quit.emit()
         
-    def menuWillOpen(self, menu: NSMenu):
+    def menuWillOpen(self, *args, **kwargs):
         pass
-    
 
-    def menuDidClose(self, menu: NSMenu):
+    def menuDidClose(self, *args, **kwargs):
         pass
 
 
