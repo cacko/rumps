@@ -819,7 +819,6 @@ class NSApp(NSObject):
                  'should have a callback of quit_application or call it indirectly.')
         # mainmenu of our status bar spot (_menu attribute is NSMenu)
         self.nsstatusitem.setMenu_(mainmenu._menu)
-        mainmenu.setDelegate_(self)
 
     def setStatusBarTitle(self):
         self.nsstatusitem.setTitle_(self._app['_title'])
@@ -881,11 +880,11 @@ class NSApp(NSObject):
         _log('applicationWillTerminate')
         events.before_quit.emit()
         
-    def menuWillOpen(self, *args, **kwargs):
+    def menuWillOpen_(self, *args, **kwargs):
         _log('menuWillOpen')
         events.on_menu_open.emit()
 
-    def menuDidClose(self, *args, **kwargs):
+    def menuDidClose_(self, *args, **kwargs):
         _log('menuDidClose')
         events.on_menu_close.emit()
 
@@ -938,6 +937,7 @@ class App(object):
         self.title = title
         self.quit_button = quit_button
         self._menu = Menu()
+        
         if menu is not None:
             self.menu = menu
         self._application_support = application_support(self._name)
@@ -1109,6 +1109,7 @@ class App(object):
         del t, b
 
         self._nsapp.initializeStatusBar()
+        self.menu._menu.setDelegate_(self._nsapp)
 
         AppHelper.installMachInterrupt()
         events.before_start.emit()
