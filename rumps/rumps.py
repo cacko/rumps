@@ -7,6 +7,7 @@
 
 # For compatibility with pyinstaller
 # See: http://stackoverflow.com/questions/21058889/pyinstaller-not-finding-pyobjc-library-macos-python
+import logging
 import typing
 import AppKit
 import Cocoa
@@ -36,6 +37,9 @@ from AppKit import (
     NSWorkspaceScreensDidWakeNotification, 
     NSWorkspaceScreensDidSleepNotification
 )
+from AVFoundation import (
+    AVAudioSessionRouteChangeNotification
+)
 from PyObjCTools import AppHelper
 
 import pickle as pickle
@@ -45,6 +49,8 @@ import pickle
 import traceback
 import weakref
 from pathlib import Path
+
+from sklearn.decomposition import NMF
 from .utils import ListDict
 from rumps.compat import string_types, text_type
 from rumps import _internal, events
@@ -859,6 +865,13 @@ class NSApp(NSObject):
             NSWorkspaceScreensDidWakeNotification,
             None
         )
+        
+        notificationCenter.addObserver_selector_name_object_(
+            self,
+            self.audioRouteChange_,
+            AVAudioSessionRouteChangeNotification,
+            None
+        )
 
     def receiveSleepNotification_(self, ns_notification):
         _log('receiveSleepNotification')
@@ -887,6 +900,10 @@ class NSApp(NSObject):
     def menuDidClose_(self, *args, **kwargs):
         _log('menuDidClose')
         events.on_menu_close.emit()
+        
+    def audioRouteChange_(self, ns_notification):
+        _log('audio reoute change')
+        logging.warning(ns_notification)
 
 
 
