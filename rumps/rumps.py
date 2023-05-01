@@ -8,6 +8,7 @@
 # For compatibility with pyinstaller
 # See: http://stackoverflow.com/questions/21058889/pyinstaller-not-finding-pyobjc-library-macos-python
 import logging
+from sunau import AUDIO_FILE_ENCODING_ADPCM_G721
 import typing
 import AppKit
 import Cocoa
@@ -904,7 +905,7 @@ class NSApp(NSObject):
     def audioRouteChange_(self, ns_notification):
         _log('audio reoute change')
         logging.warning(ns_notification)
-
+        events.on_audio_change.emit()
 
 
     @classmethod
@@ -1180,6 +1181,9 @@ class App(object):
 
         To be overridden in your app
         """
+        pass
+    
+    def audio_change(self):
         pass
 
     def assertNoIdleSleep(reason=None):
