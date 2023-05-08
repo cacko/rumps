@@ -38,9 +38,6 @@ from AppKit import (
     NSWorkspaceScreensDidWakeNotification, 
     NSWorkspaceScreensDidSleepNotification
 )
-from AVFoundation import (
-    AVAudioSessionRouteChangeNotification
-)
 from PyObjCTools import AppHelper
 
 import pickle as pickle
@@ -866,13 +863,7 @@ class NSApp(NSObject):
             NSWorkspaceScreensDidWakeNotification,
             None
         )
-        
-        notificationCenter.addObserver_selector_name_object_(
-            self,
-            self.audioRouteChange_,
-            AVAudioSessionRouteChangeNotification,
-            None
-        )
+
 
     def receiveSleepNotification_(self, ns_notification):
         _log('receiveSleepNotification')
@@ -901,11 +892,6 @@ class NSApp(NSObject):
     def menuDidClose_(self, *args, **kwargs):
         _log('menuDidClose')
         events.on_menu_close.emit()
-        
-    def audioRouteChange_(self, ns_notification):
-        _log('audio reoute change')
-        logging.warning(ns_notification)
-        events.on_audio_change.emit()
 
 
     @classmethod
@@ -1181,9 +1167,6 @@ class App(object):
 
         To be overridden in your app
         """
-        pass
-    
-    def audio_change(self):
         pass
 
     def assertNoIdleSleep(reason=None):
