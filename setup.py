@@ -56,7 +56,7 @@ setup(
     package_data={'': ['LICENSE']},
     license='BSD License',
     install_requires=[
-        'pyobjc>=9.0.1',
+        'pyobjc-framework-cocoa>=10.0',
     ],
     extras_require={
         'dev': [
