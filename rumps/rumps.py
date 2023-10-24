@@ -13,29 +13,29 @@ import typing
 import AppKit
 import Cocoa
 from Foundation import (
-    NSDate, 
+    NSDate,
     NSTimer,
-    NSRunLoop, 
-    NSDefaultRunLoopMode, 
+    NSRunLoop,
+    NSDefaultRunLoopMode,
     NSSearchPathForDirectoriesInDomains,
-    NSLog, 
-    NSObject, 
+    NSLog,
+    NSObject,
     NSUserDefaults,
     NSBundle
 )
 from AppKit import (
-    NSApplication, 
-    NSStatusBar, 
-    NSMenu, 
-    NSMenuItem, 
-    NSAlert, 
-    NSImage, 
-    NSSlider, 
-    NSSize, 
+    NSApplication,
+    NSStatusBar,
+    NSMenu,
+    NSMenuItem,
+    NSAlert,
+    NSImage,
+    NSSlider,
+    NSSize,
     NSWorkspace,
     NSWorkspaceWillSleepNotification,
-    NSWorkspaceDidWakeNotification, 
-    NSWorkspaceScreensDidWakeNotification, 
+    NSWorkspaceDidWakeNotification,
+    NSWorkspaceScreensDidWakeNotification,
     NSWorkspaceScreensDidSleepNotification
 )
 from PyObjCTools import AppHelper
@@ -61,7 +61,7 @@ functions = [("IOPMAssertionCreateWithName", b"i@i@o^i"),
              ("IOPSCopyPowerSourcesInfo", b"@"),
              ("IOPSCopyPowerSourcesList", b"@@"),
              ("IOPSGetProvidingPowerSourceType", b"@@"),
-            ]
+             ]
 
 # No idea why PyLint complains about objc.loadBundleFunctions
 # pylint: disable=no-member
@@ -359,7 +359,7 @@ class Menu(ListDict):
                 return
 
             for n, ele in enumerate(iter(iterable.items()) if isinstance(iterable, typing.Mapping) else iterable):
-                
+
                 # for mappings we recurse but don't drop down a level in the menu
                 if not isinstance(ele, MenuItem) and isinstance(ele, typing.Mapping):
                     parse_menu(ele, menu, depth)
@@ -800,6 +800,7 @@ class Timer(object):
         except Exception:
             traceback.print_exc()
 
+
 class NSApp(NSObject):
     """Objective-C delegate class for NSApplication. Don't instantiate - use App instead."""
 
@@ -864,7 +865,6 @@ class NSApp(NSObject):
             None
         )
 
-
     def receiveSleepNotification_(self, ns_notification):
         _log('receiveSleepNotification')
         events.on_sleep.emit()
@@ -884,7 +884,7 @@ class NSApp(NSObject):
     def applicationWillTerminate_(self, ns_notification):
         _log('applicationWillTerminate')
         events.before_quit.emit()
-        
+
     def menuWillOpen_(self, *args, **kwargs):
         _log('menuWillOpen')
         events.on_menu_open.emit()
@@ -892,7 +892,6 @@ class NSApp(NSObject):
     def menuDidClose_(self, *args, **kwargs):
         _log('menuDidClose')
         events.on_menu_close.emit()
-
 
     @classmethod
     def callback_(cls, nsmenuitem):
@@ -941,7 +940,7 @@ class App(object):
         self.title = title
         self.quit_button = quit_button
         self._menu = Menu()
-        
+
         if menu is not None:
             self.menu = menu
         self._application_support = application_support(self._name)
@@ -1154,14 +1153,14 @@ class App(object):
         To be overridden in your app
         """
         pass
-    
+
     def menu_open(self):
         """Method being run when main menu is opened
 
         To be overridden in your app
         """
         pass
-    
+
     def menu_close(self):
         """Method being run when main menu is close
 
@@ -1189,4 +1188,4 @@ class App(object):
         """Uses IOKit functions to remove a "no idle sleep" assertion."""
         if assertion_id:
             # pylint: disable=undefined-variable
-            IOPMAssertionRelease(assertion_id) # type: ignore
+            IOPMAssertionRelease(assertion_id)  # type: ignore
