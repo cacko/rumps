@@ -167,16 +167,20 @@ def _nsimage_from_file(filename, dimensions=None, template=None):
     image = NSImage.alloc().initByReferencingFile_(filename)
     image.setScalesWhenResized_(True)
     image.setSize_((20, 20) if dimensions is None else dimensions)
-    if not template is None:
+    if template is not None:
         image.setTemplate_(template)
     return image
 
 
 def _nsimage_system_symbol_name(symbol_name: str):
-    image = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(
-        symbol_name, None)
-    image.setTemplate_(True)
-    return image
+    try:
+        image = Cocoa.NSImage.imageWithSystemSymbolName_accessibilityDescription_(
+            symbol_name, None)
+        assert image
+        image.setTemplate_(True)
+        return image
+    except AssertionError:
+        return None
 
 
 # Decorators and helper function serving to register functions for dealing with interaction and events
