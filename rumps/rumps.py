@@ -48,7 +48,6 @@ import traceback
 import weakref
 from pathlib import Path
 
-from sklearn.decomposition import NMF
 from .utils import ListDict
 from rumps.compat import string_types, text_type
 from rumps import _internal, events
