@@ -29,10 +29,9 @@ def fix_virtualenv():
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
-
-    with open(os.path.join(executable_dir, 'Contents', 'Info.plist'), 'w') as f:
+    info_list = os.path.join(executable_dir, 'Contents', 'Info.plist')
+    with open(info_list, 'w') as f:
         f.write(INFO_PLIST_TEMPLATE % {'name': 'rumps'})
-
 
 
 def version():
@@ -46,6 +45,7 @@ def version():
     from rumps.version import __version__
     return __version__
 
+
 setup(
     name=__title__,
     version=version(),
@@ -56,7 +56,10 @@ setup(
     package_data={'': ['LICENSE']},
     license='BSD License',
     install_requires=[
+        "pyobjc-core==10.0",
         'pyobjc-framework-cocoa>=10.0',
+        'pyobjc-framework-applicationservices==10.0',
+        "pyobjc-framework-quartz==10.0"
     ],
     extras_require={
         'dev': [

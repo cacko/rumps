@@ -7,8 +7,6 @@
 
 # For compatibility with pyinstaller
 # See: http://stackoverflow.com/questions/21058889/pyinstaller-not-finding-pyobjc-library-macos-python
-import logging
-from sunau import AUDIO_FILE_ENCODING_ADPCM_G721
 import typing
 import AppKit
 import Cocoa
@@ -43,7 +41,6 @@ from PyObjCTools import AppHelper
 import pickle as pickle
 import objc
 import os
-import pickle
 import traceback
 import weakref
 from pathlib import Path
@@ -89,22 +86,26 @@ def alert(title=None, message='', ok=None, cancel=None, other=None, icon_path=No
     """Generate a simple alert window.
 
     .. versionchanged:: 0.2.0
-        Providing a `cancel` string will set the button text rather than only using text "Cancel". `title` is no longer
+        Providing a `cancel` string will set the button text rather than only using text "Cancel". `title` 
+        is no longer
         a required parameter.
 
     .. versionchanged:: 0.3.0
         Add `other` button functionality as well as `icon_path` to change the alert icon.
 
-    :param title: the text positioned at the top of the window in larger font. If ``None``, a default localized title
+    :param title: the text positioned at the top of the window in larger font. 
+                If ``None``, a default localized title
                   is used. If not ``None`` or a string, will use the string representation of the object.
     :param message: the text positioned below the `title` in smaller font. If not a string, will use the string
                     representation of the object.
     :param ok: the text for the "ok" button. Must be either a string or ``None``. If ``None``, a default
                localized button title will be used.
     :param cancel: the text for the "cancel" button. If a string, the button will have that text. If `cancel`
-                   evaluates to ``True``, will create a button with text "Cancel". Otherwise, this button will not be
+                   evaluates to ``True``, will create a button with text "Cancel". Otherwise, 
+                   this button will not be
                    created.
-    :param other: the text for the "other" button. If a string, the button will have that text. Otherwise, this button will not be
+    :param other: the text for the "other" button. If a string, the button will have that text. 
+    Otherwise, this button will not be
                    created.
     :param icon_path: a path to an image. If ``None``, the applications icon is used.
     :return: a number representing the button pressed. The "ok" button is ``1`` and "cancel" is ``0``.
@@ -185,8 +186,10 @@ def _nsimage_system_symbol_name(symbol_name: str):
 # Decorators and helper function serving to register functions for dealing with interaction and events
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def timer(interval):
-    """Decorator for registering a function as a callback in a new thread. The function will be repeatedly called every
-    `interval` seconds. This decorator accomplishes the same thing as creating a :class:`rumps.Timer` object by using
+    """Decorator for registering a function as a callback in a new thread.
+      The function will be repeatedly called every
+    `interval` seconds. This decorator accomplishes the same thing as creating a :class:`rumps.Timer` 
+    object by using
     the decorated function and `interval` as parameters and starting it on application launch.
 
     .. code-block:: python
@@ -205,9 +208,11 @@ def timer(interval):
 
 
 def clicked(*args, **options):
-    """Decorator for registering a function as a callback for a click action on a :class:`rumps.MenuItem` within the
+    """Decorator for registering a function as a callback for a click action on a :class:`rumps.MenuItem` 
+    within the
     application. The passed `args` must specify an existing path in the main menu. The :class:`rumps.MenuItem`
-    instance at the end of that path will have its :meth:`rumps.MenuItem.set_callback` method called, passing in the
+    instance at the end of that path will have its :meth:`rumps.MenuItem.set_callback` method called, passing
+      in the
     decorated function.
 
     .. versionchanged:: 0.2.1
@@ -247,7 +252,8 @@ def clicked(*args, **options):
 
 
 def slider(*args, **options):
-    """Decorator for registering a function as a callback for a slide action on a :class:`rumps.SliderMenuItem` within
+    """Decorator for registering a function as a callback for a slide action on a :class:`rumps.SliderMenuItem` 
+    within
     the application. All elements of the provided path will be created as :class:`rumps.MenuItem` objects. The
     :class:`rumps.SliderMenuItem` will be created as a child of the last menu item.
 
@@ -255,8 +261,10 @@ def slider(*args, **options):
 
     .. versionadded:: 0.3.0
 
-    :param args: a series of strings representing the path to a :class:`rumps.SliderMenuItem` in the main menu of the
+    :param args: a series of strings representing the path to a :class:`rumps.SliderMenuItem`
+      in the main menu of the
                  application.
+
     """
     def decorator(f):
 
@@ -339,8 +347,10 @@ class Menu(ListDict):
 
     def update(self, iterable, **kwargs):
         """Update with objects from `iterable` after each is converted to a :class:`rumps.MenuItem`, ignoring
-        existing keys. This update is a bit different from the usual ``dict.update`` method. It works recursively and
-        will parse a variety of Python containers and objects, creating `MenuItem` object and submenus as necessary.
+        existing keys. This update is a bit different from the usual ``dict.update`` method. 
+        It works recursively and
+        will parse a variety of Python containers and objects, creating `MenuItem` 
+        object and submenus as necessary.
 
         If the `iterable` is an instance of :class:`rumps.MenuItem`, then add to the menu.
 
@@ -352,7 +362,8 @@ class Menu(ListDict):
               :attr:`rumps.MenuItem.title` attribute.
             - if the element is an iterable having a length of 2, the first value will be converted to a
               :class:`rumps.MenuItem` and the second will act as the submenu for that `MenuItem`
-            - if the element is an iterable having a length of anything other than 2, a ``ValueError`` will be raised
+            - if the element is an iterable having a length of anything other than 2, a ``ValueError``
+              will be raised
             - if the element is a mapping, each key-value pair will act as an iterable having a length of 2
 
         """
@@ -372,7 +383,8 @@ class Menu(ListDict):
                     try:
                         menuitem, submenu = ele
                     except TypeError:
-                        raise ValueError('menu iterable element #{0} at depth {1} has length {2}; must be a single '
+                        raise ValueError('menu iterable element #{0} at depth {1} has length {2};'
+                                         ' must be a single '
                                          'menu item or a pair consisting of a menu item and its '
                                          'submenu'.format(n, depth, len(tuple(ele))))
                     menuitem = MenuItem(menuitem)
@@ -454,14 +466,17 @@ class MenuItem(Menu):
     A couple of important notes:
 
         - A new `MenuItem` instance can be created from any object with a string representation.
-        - Attempting to create a `MenuItem` by passing an existing `MenuItem` instance as the first parameter will not
+        - Attempting to create a `MenuItem` by passing an existing `MenuItem`
+          instance as the first parameter will not
           result in a new instance but will instead return the existing instance.
 
-    Remembers the order of items added to menu and has constant time lookup. Can insert new `MenuItem` object before or
+    Remembers the order of items added to menu and has constant time lookup.
+      Can insert new `MenuItem` object before or
     after other specified ones.
 
     .. note::
-       When adding a `MenuItem` instance to a menu, the value of :attr:`title` at that time will serve as its key for
+       When adding a `MenuItem` instance to a menu, the value of :attr:`title`
+         at that time will serve as its key for
        lookup performed on menus even if the `title` changes during program execution.
 
     :param title: the name of this menu item. If not a string, will use the string representation of the object.
@@ -473,12 +488,15 @@ class MenuItem(Menu):
     """
 
     # NOTE:
-    # Because of the quirks of PyObjC, a class level dictionary **inside an NSObject subclass for 10.9.x** is required
+    # Because of the quirks of PyObjC, a class level dictionary **inside an NSObject subclass
+    #  for 10.9.x** is required
     # in order to have callback_ be a @classmethod. And we need callback_ to be class level because we can't use
-    # instances in setTarget_ method of NSMenuItem. Otherwise this would be much more straightforward like Timer class.
+    # instances in setTarget_ method of NSMenuItem. Otherwise this would be much more straightforward
+    #  like Timer class.
     #
     # So the target is always the NSApp class and action is always the @classmethod callback_ -- for every function
-    # decorated with @clicked(...). All we do is lookup the MenuItem instance and the user-provided callback function
+    # decorated with @clicked(...). All we do is lookup the MenuItem instance and
+    # the user-provided callback function
     # based on the NSMenuItem (the only argument passed to callback_).
 
     def __new__(cls, *args, **kwargs):
@@ -507,12 +525,15 @@ class MenuItem(Menu):
         super(MenuItem, self).__setitem__(key, value)
 
     def __repr__(self):
-        return '<{0}: [{1} -> {2}; callback: {3}]>'.format(type(self).__name__, repr(self.title), list(map(str, self)),
-                                                           repr(self.callback))
+        return '<{0}: [{1} -> {2}; callback: {3}]>'.format(
+            type(self).__name__, repr(self.title),
+            list(map(str, self)),
+            repr(self.callback))
 
     @property
     def title(self):
-        """The text displayed in a menu for this menu item. If not a string, will use the string representation of the
+        """The text displayed in a menu for this menu item.
+        If not a string, will use the string representation of the
         object.
         """
         return self._menuitem.title()
@@ -524,11 +545,13 @@ class MenuItem(Menu):
 
     @property
     def icon(self):
-        """The path to an image displayed next to the text for this menu item. If set to ``None``, the current image
+        """The path to an image displayed next to the text for this menu item. 
+        If set to ``None``, the current image
         (if any) is removed.
 
         .. versionchanged:: 0.2.0
-           Setting icon to ``None`` after setting it to an image will correctly remove the icon. Returns the path to an
+           Setting icon to ``None`` after setting it to an image will correctly remove the icon. 
+           Returns the path to an
            image rather than exposing a `PyObjC` class.
 
         """
@@ -541,7 +564,8 @@ class MenuItem(Menu):
     @property
     def template(self):
         """Template mode for an icon. If set to ``None``, the current icon (if any) is displayed as a color icon.
-        If set to ``True``, template mode is enabled and the icon will be displayed correctly in dark menu bar mode.
+        If set to ``True``, template mode is enabled and the icon will 
+        be displayed correctly in dark menu bar mode.
         """
         return self._template
 
@@ -551,11 +575,13 @@ class MenuItem(Menu):
         self.set_icon(self.icon, template=template_mode)
 
     def set_icon(self, icon_path, dimensions=None, template=None):
-        """Sets the icon displayed next to the text for this menu item. If set to ``None``, the current image (if any)
+        """Sets the icon displayed next to the text for this menu item. If set to ``None``,
+          the current image (if any)
         is removed. Can optionally supply `dimensions`.
 
         .. versionchanged:: 0.2.0
-           Setting `icon` to ``None`` after setting it to an image will correctly remove the icon. Passing `dimensions`
+           Setting `icon` to ``None`` after setting it to an image will correctly 
+           remove the icon. Passing `dimensions`
            a sequence whose length is not two will no longer silently error.
 
         :param icon_path: a file path to an image.
@@ -576,7 +602,8 @@ class MenuItem(Menu):
 
     @property
     def state(self):
-        """The state of the menu item. The "on" state is symbolized by a check mark. The "mixed" state is symbolized
+        """The state of the menu item. The "on" state is symbolized by a check mark. 
+        The "mixed" state is symbolized
         by a dash.
 
         .. table:: Setting states
@@ -626,13 +653,17 @@ class MenuItem(Menu):
         self.hidden = False
 
     def set_callback(self, callback, key=None):
-        """Set the function serving as callback for when a click event occurs on this menu item. When `callback` is
-        ``None``, it will disable the callback function and grey out the menu item. If `key` is a string, set as the
+        """Set the function serving as callback for when a click event occurs on this menu item. 
+        When `callback` is
+        ``None``, it will disable the callback function and grey out the menu item. 
+        If `key` is a string, set as the
         key shortcut. If it is ``None``, no adjustment will be made to the current key shortcut.
 
         .. versionchanged:: 0.2.0
-           Allowed passing ``None`` as both `callback` and `key`. Additionally, passing a `key` that is neither a
-           string nor ``None`` will result in a standard ``TypeError`` rather than various, uninformative `PyObjC`
+           Allowed passing ``None`` as both `callback` and `key`. 
+           Additionally, passing a `key` that is neither a
+           string nor ``None`` will result in a standard ``TypeError`` 
+           rather than various, uninformative `PyObjC`
            internal errors depending on the object.
 
         :param callback: the function to be called when the user clicks on this menu item.
@@ -726,7 +757,8 @@ class SeparatorMenuItem(object):
 
 class Timer(object):
     """
-    Python abstraction of an Objective-C event timer in a new thread for application. Controls the callback function,
+    Python abstraction of an Objective-C event timer in a new thread for application.
+      Controls the callback function,
     interval, and starting/stopping the run loop.
 
     .. versionchanged:: 0.2.0
@@ -823,7 +855,8 @@ class NSApp(NSObject):
             quit_button.set_callback(quit_application)
             mainmenu.add(quit_button)
         else:
-            _log('WARNING: the default quit button is disabled. To exit the application gracefully, another button '
+            _log('WARNING: the default quit button is disabled. To exit the application gracefully, '
+                 'another button '
                  'should have a callback of quit_application or call it indirectly.')
         # mainmenu of our status bar spot (_menu attribute is NSMenu)
         self.nsstatusitem.setMenu_(mainmenu._menu)
@@ -909,19 +942,23 @@ class NSApp(NSObject):
 class App(object):
     """Represents the statusbar application.
 
-    Provides a simple and pythonic interface for all those long and ugly `PyObjC` calls. :class:`rumps.App` may be
+    Provides a simple and pythonic interface for all those long and ugly `PyObjC` 
+    calls. :class:`rumps.App` may be
     subclassed so that the application logic can be encapsulated within a class. Alternatively, an `App` can be
     instantiated and the various callback functions can exist at module level.
 
     .. versionchanged:: 0.2.0
-       `name` parameter must be a string and `title` must be either a string or ``None``. `quit_button` parameter added.
+       `name` parameter must be a string and `title` must be either a string or
+         ``None``. `quit_button` parameter added.
 
     :param name: the name of the application.
     :param title: text that will be displayed for the application in the statusbar.
     :param icon: file path to the icon that will be displayed for the application in the statusbar.
-    :param menu: an iterable of Python objects or pairs of objects that will be converted into the main menu for the
+    :param menu: an iterable of Python objects or pairs of objects that
+      will be converted into the main menu for the
                  application. Parsing is implemented by calling :meth:`rumps.MenuItem.update`.
-    :param quit_button: the quit application menu item within the main menu. If ``None``, the default quit button will
+    :param quit_button: the quit application menu item within the main menu. 
+    If ``None``, the default quit button will
                         not be added.
     """
 
@@ -953,18 +990,22 @@ class App(object):
 
     @property
     def name(self):
-        """The name of the application. Determines the application support folder name. Will also serve as the title
+        """The name of the application. Determines the application support folder name. 
+        Will also serve as the title
         text of the application if :attr:`title` is not set.
         """
         return self._name
 
     @property
     def title(self):
-        """The text that will be displayed for the application in the statusbar. Can be ``None`` in which case the icon
-        will be used or, if there is no icon set the application text will fallback on the application :attr:`name`.
+        """The text that will be displayed for the application in the statusbar. 
+        Can be ``None`` in which case the icon
+        will be used or, if there is no icon set the application text will 
+        fallback on the application :attr:`name`.
 
         .. versionchanged:: 0.2.0
-           If the title is set then changed to ``None``, it will correctly be removed. Must be either a string or
+           If the title is set then changed to ``None``, it will correctly be removed. 
+           Must be either a string or
            ``None``.
 
         """
@@ -1011,7 +1052,8 @@ class App(object):
     @property
     def template(self):
         """Template mode for an icon. If set to ``None``, the current icon (if any) is displayed as a color icon.
-        If set to ``True``, template mode is enabled and the icon will be displayed correctly in dark menu bar mode.
+        If set to ``True``, template mode is enabled and the icon will be displayed correctly 
+        in dark menu bar mode.
         """
         return self._template
 
@@ -1034,9 +1076,12 @@ class App(object):
 
     @property
     def quit_button(self):
-        """The quit application menu item within the main menu. This is a special :class:`rumps.MenuItem` object that
-        will both replace any function callback with :func:`rumps.quit_application` and add itself to the end of the
-        main menu when :meth:`rumps.App.run` is called. If set to ``None``, the default quit button will not be added.
+        """The quit application menu item within the main menu. 
+        This is a special :class:`rumps.MenuItem` object that
+        will both replace any function callback with :func:`rumps.quit_application` 
+        and add itself to the end of the
+        main menu when :meth:`rumps.App.run` is called. If set to ``None``, 
+        the default quit button will not be added.
 
         .. warning::
            If set to ``None``, some other menu item should call :func:`rumps.quit_application` so that the
@@ -1082,13 +1127,15 @@ class App(object):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def run(self, **options):
-        """Performs various setup tasks including creating the underlying Objective-C application, starting the timers,
+        """Performs various setup tasks including creating the 
+        underlying Objective-C application, starting the timers,
         and registering callback functions for click events. Then starts the application run loop.
 
         .. versionchanged:: 0.2.1
             Accepts `debug` keyword argument.
 
-        :param debug: determines if application should log information useful for debugging. Same effect as calling
+        :param debug: determines if application should log information useful for debugging.
+          Same effect as calling
                       :func:`rumps.debug_mode`.
 
         """
@@ -1122,11 +1169,11 @@ class App(object):
         try:
             if self._nosleep:
                 self.assertion_id = self.assertNoIdleSleep()
-        except:
+        except Exception:
             pass
         try:
             AppHelper.runEventLoop()
-        except:
+        except Exception:
             events.before_quit.emit()
 
     def sleep(self):
