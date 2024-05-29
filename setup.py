@@ -56,10 +56,10 @@ setup(
     package_data={'': ['LICENSE']},
     license='BSD License',
     install_requires=[
-        "pyobjc-core==10.2",
-        'pyobjc-framework-cocoa>=10.2',
-        'pyobjc-framework-applicationservices==10.2',
-        "pyobjc-framework-quartz==10.2"
+        "pyobjc-core==10.3",
+        'pyobjc-framework-cocoa>=10.3',
+        'pyobjc-framework-applicationservices==10.3',
+        "pyobjc-framework-quartz==10.3"
     ],
     extras_require={
         'dev': [
